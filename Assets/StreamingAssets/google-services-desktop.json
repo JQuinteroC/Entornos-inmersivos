@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "69309081937",
+    "project_id": "entornos-inmersivos-prb",
+    "storage_bucket": "entornos-inmersivos-prb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:69309081937:android:8fc3d7122b8d76da110b70",
+        "android_client_info": {
+          "package_name": "com.ud.entornos"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "69309081937-9na28j78ije10sftjjhd6nr8cvpsetr7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDpWCRBJyMrOpx67I64jKn4cI9BRq7QIac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "69309081937-9na28j78ije10sftjjhd6nr8cvpsetr7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
