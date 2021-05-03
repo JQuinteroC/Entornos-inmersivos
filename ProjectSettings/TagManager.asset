@@ -3,7 +3,19 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - maintx
+  - Table
+  - points
+  - oh
+  - Tv
+  - Chair
+  - Shelf
+  - Lamp
+  - Laptop
+  - Clock
+  - Bed
+  - Computer
   layers:
   - Default
   - TransparentFX

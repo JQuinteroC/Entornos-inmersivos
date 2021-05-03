@@ -136,7 +136,7 @@ GameObject:
   - component: {fileID: 226764225}
   m_Layer: 5
   m_Name: Text (TMP)
-  m_TagString: Untagged
+  m_TagString: points
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -674,7 +674,7 @@ GameObject:
   - component: {fileID: 1265020630}
   m_Layer: 0
   m_Name: Object Handler
-  m_TagString: Untagged
+  m_TagString: oh
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -692,7 +692,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   timeP: 1
-  points: 500
   chair: {fileID: 8933085088402518932, guid: c2be862b384381e44b3cf51d583b27a2, type: 3}
   table: {fileID: 5087516091694603296, guid: 896d600158371254d9b7e5431d20f70a, type: 3}
   shelf: {fileID: 8170607943968057116, guid: 7be231d8cb963bc4c9ffd4850d133289, type: 3}
@@ -744,7 +743,7 @@ GameObject:
   - component: {fileID: 1329416485}
   m_Layer: 0
   m_Name: MainText
-  m_TagString: Untagged
+  m_TagString: maintx
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -1014,7 +1013,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 26f16a6cb1bef744e9eea3006ccdfa8c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Handler: {fileID: 1265020629}
   textMesh: {fileID: 226764225}
 --- !u!114 &1983809110
 MonoBehaviour:
