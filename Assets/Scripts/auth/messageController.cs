@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class messageController : MonoBehaviour
+public class MessageController : MonoBehaviour
 {
     public GameObject panelMessange;
     public Text textMessange;

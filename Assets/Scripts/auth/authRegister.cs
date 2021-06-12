@@ -29,7 +29,6 @@ public class authRegister : MonoBehaviour
     // Registro de nuevo usuario
     private void CreateUserWithEmailAndPasswordAsync()
     {
-        string name = inputFieldName.text;
         string email = inputFieldEmail.text;
         string password = inputFieldPass.text;
 
@@ -51,6 +50,8 @@ public class authRegister : MonoBehaviour
                     {
                         panelMessage.SetActive(true);
                         textErrorMessage.text = "El correo electrónico no tiene el formato correcto, por ejemplo: xxxx@xxxx.xx";
+                        inputFieldEmail.text = "";
+                        inputFieldEmail.Select();
                     });
                     return;
                 }
@@ -61,6 +62,8 @@ public class authRegister : MonoBehaviour
                     {
                         panelMessage.SetActive(true);
                         textErrorMessage.text = "La contraseña es muy débil, por favor escriba una contraseña con más de 6 caracteres";
+                        inputFieldPass.text = "";
+                        inputFieldPass.Select();
                     });
                     return;
                 }
@@ -70,13 +73,14 @@ public class authRegister : MonoBehaviour
                     UnityMainThread.wkr.AddJob(() =>
                     {
                         panelMessage.SetActive(true);
-                        textErrorMessage.text = "La contraseña es muy débil, por favor escriba una contraseña con más de 6 caracteres";
+                        textErrorMessage.text = "El correo electronico ya se encuentra en uso";
+                        inputFieldEmail.Select();
                     });
                     return;
                 }
 
 
-                Debug.Log("Error sin exception programada: " + task.Exception.InnerExceptions[0]);
+                Debug.Log("Error sin excepción programada: " + task.Exception.InnerExceptions[0]);
                 return;
             }
 
@@ -84,13 +88,14 @@ public class authRegister : MonoBehaviour
             user = task.Result;
         });
 
-        UpdateUserDisplayName(name);
     }
 
     // Actualización del displayName para usuairos nuevos
-    private void UpdateUserDisplayName(string name)
+    private void UpdateUserDisplayName()
     {
         Firebase.Auth.FirebaseUser user = auth.CurrentUser;
+        string name = inputFieldName.text;
+
         if (user != null)
         {
             Firebase.Auth.UserProfile profile = new Firebase.Auth.UserProfile
@@ -109,6 +114,7 @@ public class authRegister : MonoBehaviour
                     Debug.LogError("Error en la asignación del displayname: " + task.Exception);
                     return;
                 }
+                Debug.Log("diplay name");
             });
         }
 
@@ -144,33 +150,18 @@ public class authRegister : MonoBehaviour
     void InitializeFirebase()
     {
         auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-        auth.StateChanged += AuthStateChanged;
-        AuthStateChanged(this, null);
+        auth.SignOut();
     }
 
     // Validación de inicios de sesión
-    void AuthStateChanged(object sender, System.EventArgs eventArgs)
-    {
-        if (auth.CurrentUser != user)
-        {
-            bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
-            if (!signedIn && user != null)
-            {
-                Debug.Log("Signed out " + user.UserId);
-            }
-            user = auth.CurrentUser;
-            if (signedIn)
-            {
-                Debug.Log("Signed in " + user.UserId);
-                displayName = user.DisplayName ?? "";
-                emailAddress = user.Email ?? "";
-            }
-        }
-    }
+ 
 
     public void RegisterButton()
     {
         CreateUserWithEmailAndPasswordAsync();
+        UpdateUserDisplayName();
+        auth.SignOut();
+        
         SceneManager.LoadScene("Login");
     }
 

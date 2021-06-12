@@ -1,82 +1,195 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Firebase;
+using Firebase.Auth;
 using UnityEngine.UI;
-using UnityEngine.SceneManagement;
 
-public class authManager : MonoBehaviour
+public class AuthManager : MonoBehaviour
 {
-    protected Firebase.Auth.FirebaseAuth auth;
-    protected Firebase.Auth.FirebaseUser user;
-    private string displayName;
+    //Firebase variables
+    [Header("Firebase")]
+    public DependencyStatus dependencyStatus;
+    public FirebaseAuth auth;
+    public FirebaseUser User;
 
-    public InputField inputFieldEmail;
-    public InputField inputFieldPass;
+    //Login variables
+    [Header("Login")]
+    public InputField emailLoginField;
+    public InputField passwordLoginField;
 
-    // Start is called before the first frame update
-    void Start()
+    //Register variables
+    [Header("Register")]
+    public InputField usernameRegisterField;
+    public InputField emailRegisterField;
+    public InputField passwordRegisterField;
+    public InputField passwordRegisterVerifyField;
+    
+    [Header("Message")]
+    public GameObject panelMessage;
+    public Text textMessage;
+
+
+    void Awake()
     {
-        InitializeFirebase();
-    }
-
-    void InitializeFirebase()
-    {
-        auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
-        auth.StateChanged += AuthStateChanged;
-        AuthStateChanged(this, null);
-    }
-
-    void AuthStateChanged(object sender, System.EventArgs eventArgs)
-    {
-        if(auth.CurrentUser != user)
+        FirebaseApp.CheckAndFixDependenciesAsync().ContinueWith(task =>
         {
-            bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
-            if (!signedIn && user != null)
+            dependencyStatus = task.Result;
+            if (dependencyStatus == DependencyStatus.Available)
             {
-                Debug.Log("CerrÃ³ sesiÃ³n " + user.UserId);
+                InitializeFirebase();
             }
-            user = auth.CurrentUser;
-            if (signedIn)
+            else
             {
-                Debug.Log("Inicio de sesiÃ³n " + user.UserId);
-                displayName = user.DisplayName ?? "";
-               // emailAddress = user.Email ?? "";
-               // photoUrl = user.PhotoUrl ?? "";
+                Debug.LogError("Could not resolve all Firebase dependencies: " + dependencyStatus);
             }
-        }
-
-    }
-
-    // Crete user
-    public void createUserByEmail ()
-    {
-        string email = inputFieldEmail.text;
-        string password = inputFieldPass.text;
-
-        auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task => {
-        if (task.IsCanceled) {
-            Debug.LogError("CreaciÃ³n de usuario cancelado.");
-            return;
-        }
-        if (task.IsFaulted) {
-            Debug.LogError("Problema en la creaciÃ³n de usuario en: " + task.Exception);
-            return;
-        }
-
-        // Firebase user has been created.
-        Firebase.Auth.FirebaseUser newUser = task.Result;
-        Debug.LogFormat("Firebase user created successfully: {0} ({1})",
-            newUser.DisplayName, newUser.UserId);
         });
     }
 
-    // Actual Session
-    public void ActivateSession()
+    private void InitializeFirebase()
     {
+        auth = FirebaseAuth.DefaultInstance;
+    }
 
-        void OnDestroy() {
-        auth.StateChanged -= AuthStateChanged;
-        auth = null;
+    public void LoginButton()
+    {
+        StartCoroutine(Login(emailLoginField.text, passwordLoginField.text));
+    }
+
+    public void RegisterButton()
+    {
+        StartCoroutine(Register(emailRegisterField.text, passwordRegisterField.text, usernameRegisterField.text));
+    }
+
+    private IEnumerator Login(string email, string password)
+    {
+        var LoginTask = auth.SignInWithEmailAndPasswordAsync(email, password);
+
+        yield return new WaitUntil(predicate: () => LoginTask.IsCompleted);
+
+        if (LoginTask.Exception != null)
+        {
+            Debug.LogWarning(message: $"Failed to register task with {LoginTask.Exception}");
+            FirebaseException firebaseEx = LoginTask.Exception.GetBaseException() as FirebaseException;
+            AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+
+            string message = "Inicio de sesión fallido";
+            switch (errorCode)
+            {
+                case AuthError.MissingEmail:
+                    message = "El correo electrónico no puede estar vacío";
+                    emailLoginField.Select();
+                    break;
+                case AuthError.MissingPassword:
+                    message = "La contraseña no puede estar vacía";
+                    passwordLoginField.Select();
+                    break;
+                case AuthError.WrongPassword:
+                    message = "Contraseña incorrecta";
+                    break;
+                case AuthError.InvalidEmail:
+                    message = "Correo electrónico invalido";
+                    break;
+                case AuthError.UserNotFound:
+                    message = "Usuario no encontrado";
+                    break;
+            }
+            UIManager.instance.MessageScreen();
+            textMessage.text = message;
+        }
+        else
+        {
+            // Login completo con exito
+            User = LoginTask.Result;
+            Debug.LogFormat("Inicio de sesión satisfactorio: {0} ({1})", User.DisplayName, User.Email);
+            textMessage.text = "Bienvenido " + User.DisplayName;
+            UIManager.instance.MessageScreen();
+        }
+    }
+
+    private IEnumerator Register(string email, string password, string username)
+    {
+        if (username == "")
+        {
+            textMessage.text = "El nombre del nuevo usuario está vacío";
+            UIManager.instance.MessageScreen();
+            usernameRegisterField.Select();
+        }
+        else if (passwordRegisterField.text != passwordRegisterVerifyField.text)
+        {
+            textMessage.text = "Las contraseñas no coinciden";
+            UIManager.instance.MessageScreen();
+        }
+        else
+        {
+            var RegisterTask = auth.CreateUserWithEmailAndPasswordAsync(email, password);
+            
+            yield return new WaitUntil(predicate: () => RegisterTask.IsCompleted);
+
+            if (RegisterTask.Exception != null)
+            {
+                Debug.LogWarning(message: $"Failed to register task with {RegisterTask.Exception}");
+                FirebaseException firebaseEx = RegisterTask.Exception.GetBaseException() as FirebaseException;
+                AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+
+                string message = "Registro de nuevo usuario fallido";
+                switch (errorCode)
+                {
+                    case AuthError.MissingEmail:
+                        message = "El correo electrónico no puede estar vacío";
+                        emailRegisterField.Select();
+                        break;
+                    case AuthError.MissingPassword:
+                        message = "La contraseña no puede estar vacía";
+                        passwordRegisterField.Select();
+                        break;
+                    case AuthError.WeakPassword:
+                        message = "La contraseña es muy débil, por favor escriba una contraseña con más de 6 caracteres";
+                        passwordRegisterVerifyField.text = "";
+                        passwordRegisterField.text = "";
+                        passwordRegisterField.Select();
+                        break;
+                    case AuthError.EmailAlreadyInUse:
+                        message = "El correo electronico ya se encuentra registrado";
+                        break;
+                    case AuthError.InvalidEmail:
+                        message = "El correo electrónico no tiene el formato correcto";
+                        emailRegisterField.Select();
+                        break;
+                }
+                textMessage.text = message;
+                UIManager.instance.MessageScreen();
+            }
+            else
+            {
+                // EL nuevo usuario se registro con exito
+                User = RegisterTask.Result;
+
+                if (User != null)
+                {
+                    // Configurar nombre de usario
+                    UserProfile profile = new UserProfile { DisplayName = username };
+
+                    var ProfileTask = User.UpdateUserProfileAsync(profile);
+                    yield return new WaitUntil(predicate: () => ProfileTask.IsCompleted);
+
+                    if (ProfileTask.Exception != null)
+                    {
+                        //If there are errors handle them
+                        Debug.LogWarning(message: $"Failed to register task with {ProfileTask.Exception}");
+                        FirebaseException firebaseEx = ProfileTask.Exception.GetBaseException() as FirebaseException;
+                        AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
+                        textMessage.text = "No fue posible asignar el nombre del nuevo usuario";
+                        UIManager.instance.MessageScreen();
+                    }
+                    else
+                    {
+                        UIManager.instance.LoginScreen();
+                        textMessage.text = "";
+                    }
+                }
+            }
         }
     }
 }
+
