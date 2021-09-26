@@ -73,22 +73,22 @@ public class AuthManager : MonoBehaviour
             FirebaseException firebaseEx = LoginTask.Exception.GetBaseException() as FirebaseException;
             AuthError errorCode = (AuthError)firebaseEx.ErrorCode;
 
-            string message = "Inicio de sesión fallido";
+            string message = "Inicio de sesion fallido";
             switch (errorCode)
             {
                 case AuthError.MissingEmail:
-                    message = "El correo electrónico no puede estar vacío";
+                    message = "El correo electronico no puede estar vacio";
                     emailLoginField.Select();
                     break;
                 case AuthError.MissingPassword:
-                    message = "La contraseña no puede estar vacía";
+                    message = "La contrasena no puede estar vacia";
                     passwordLoginField.Select();
                     break;
                 case AuthError.WrongPassword:
-                    message = "Contraseña incorrecta";
+                    message = "Contrasena incorrecta";
                     break;
                 case AuthError.InvalidEmail:
-                    message = "Correo electrónico invalido";
+                    message = "Correo electronico invalido";
                     break;
                 case AuthError.UserNotFound:
                     message = "Usuario no encontrado";
@@ -101,7 +101,7 @@ public class AuthManager : MonoBehaviour
         {
             // Login completo con exito
             User = LoginTask.Result;
-            Debug.LogFormat("Inicio de sesión satisfactorio: {0} ({1})", User.DisplayName, User.Email);
+            Debug.LogFormat("Inicio de sesion satisfactorio: {0} ({1})", User.DisplayName, User.Email);
             textMessage.text = "Bienvenido " + User.DisplayName;
             UIManager.instance.MessageScreen();
         }
@@ -111,13 +111,13 @@ public class AuthManager : MonoBehaviour
     {
         if (username == "")
         {
-            textMessage.text = "El nombre del nuevo usuario está vacío";
+            textMessage.text = "El nombre del nuevo usuario esta vacio";
             UIManager.instance.MessageScreen();
             usernameRegisterField.Select();
         }
         else if (passwordRegisterField.text != passwordRegisterVerifyField.text)
         {
-            textMessage.text = "Las contraseñas no coinciden";
+            textMessage.text = "Las contrasenas no coinciden";
             UIManager.instance.MessageScreen();
         }
         else
@@ -136,15 +136,15 @@ public class AuthManager : MonoBehaviour
                 switch (errorCode)
                 {
                     case AuthError.MissingEmail:
-                        message = "El correo electrónico no puede estar vacío";
+                        message = "El correo electronico no puede estar vacio";
                         emailRegisterField.Select();
                         break;
                     case AuthError.MissingPassword:
-                        message = "La contraseña no puede estar vacía";
+                        message = "La contrasena no puede estar vacia";
                         passwordRegisterField.Select();
                         break;
                     case AuthError.WeakPassword:
-                        message = "La contraseña es muy débil, por favor escriba una contraseña con más de 6 caracteres";
+                        message = "La contrasena es muy debil, por favor escriba una contrasena con mas de 6 caracteres";
                         passwordRegisterVerifyField.text = "";
                         passwordRegisterField.text = "";
                         passwordRegisterField.Select();
@@ -153,7 +153,7 @@ public class AuthManager : MonoBehaviour
                         message = "El correo electronico ya se encuentra registrado";
                         break;
                     case AuthError.InvalidEmail:
-                        message = "El correo electrónico no tiene el formato correcto";
+                        message = "El correo electronico no tiene el formato correcto";
                         emailRegisterField.Select();
                         break;
                 }

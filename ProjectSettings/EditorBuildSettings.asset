@@ -14,4 +14,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/ARScene.unity
     guid: 69bfd85b73d122648bf055d1bec98a19
+  - enabled: 1
+    path: Assets/Scenes/Menu.unity
+    guid: 8b95b313bf97ac34c9b98bd4c19e4580
   m_configObjects: {}
