@@ -2,12 +2,26 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using TMPro;
+
 public class ObjectSelection : MonoBehaviour
 {
 
     public int length = 8;
     public GameObject[] objects;
     public int selected = 0;
+    public AudioSource[] sounds;
+    public string[] names = {
+        "Bed", "Clock", "Laptop", "Lamp", 
+        "Shelf", "Table", "Chair", "TV"
+    };
+    public string[] namesE = {
+        "Cama", "Reloj", "Portátil", "Lámpara",
+        "Estante", "Mesa", "Silla", "Televisor"
+    };
+
+    public TextMeshPro textM;
+    public TextMeshPro textME;
 
     void Start(){
         objects[selected].SetActive(true);
@@ -15,14 +29,21 @@ public class ObjectSelection : MonoBehaviour
         for(int i = 1; i < length; i++){
             objects[i].SetActive(false);
         }
+        textM.text = names[selected];
+        textME.text = namesE[selected];
     }
 
+    public void playSound(){
+        sounds[selected].Play();
+    }
 
     public void nextObject(){
         Debug.Log(selected);
         objects[selected].SetActive(false);
         selected = (selected + 1) % length;
         objects[selected].SetActive(true);
+        textM.text = names[selected];
+        textME.text = namesE[selected];
         Debug.Log(selected);
     }
 
@@ -33,6 +54,8 @@ public class ObjectSelection : MonoBehaviour
             selected += length;
         }
         objects[selected].SetActive(true);
+        textM.text = names[selected];
+        textME.text = namesE[selected];
         Debug.Log(selected);
     }
 
