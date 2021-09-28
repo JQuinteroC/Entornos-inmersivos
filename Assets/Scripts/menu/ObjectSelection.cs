@@ -11,6 +11,8 @@ public class ObjectSelection : MonoBehaviour
     public GameObject[] objects;
     public int selected = 0;
     public AudioSource[] sounds;
+    public UnityEngine.Video.VideoPlayer[] videos;
+    public bool enabled = false;
     public string[] names = {
         "Bed", "Clock", "Laptop", "Lamp", 
         "Shelf", "Table", "Chair", "TV"
@@ -31,6 +33,17 @@ public class ObjectSelection : MonoBehaviour
         }
         textM.text = names[selected];
         textME.text = namesE[selected];
+    }
+
+    public void playVideo(){
+        enabled = !enabled;
+        if(enabled){
+            videos[selected].enabled = enabled;
+            videos[selected].Play();
+        }else{
+            videos[selected].Pause();
+            videos[selected].enabled = enabled;
+        }
     }
 
     public void playSound(){
